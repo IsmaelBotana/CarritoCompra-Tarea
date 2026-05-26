@@ -72,4 +72,19 @@ public class Tienda {
       }
         return seCompra;
     }
+    
+    //Estudio Recuperación autoria 3
+    public boolean activarProducto(String codigo){
+        boolean seActiva = false;
+        if (codigo != null && !codigo.isBlank() && !codigo.equals("")) {
+            for (int i = 0; i < numProductos && !seActiva; i++) {
+                if (catalogo[i] != null) {
+                    if (catalogo[i].getCodigo().equals(codigo)) {
+                        seActiva = catalogo[i].activar();
+                    }
+                }
+            }
+        }
+        return seActiva;
+    }
 }

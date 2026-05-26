@@ -22,11 +22,11 @@ public class Carrito {
     public LineaCarrito buscarLinea(String codigo) {
         LineaCarrito ln = null;
         for (LineaCarrito linea : lineas) {
-            if(linea != null) {
-            if (linea.getProducto().getCodigo().equals(codigo)) {
-                ln = linea;
+            if (linea != null) {
+                if (linea.getProducto().getCodigo().equals(codigo)) {
+                    ln = linea;
+                }
             }
-        }
         }
         return ln;
     }
@@ -37,12 +37,12 @@ public class Carrito {
             if (p instanceof ProductoUnidad) {
                 if (cantidad == (int) cantidad) {
                     for (LineaCarrito l : lineas) {
-                        if(l != null) {
-                        if (l.getProducto().equals(p)) {
-                            l.cantidad = (l.getCantidad() + cantidad);
-                            esAgregado = true;
+                        if (l != null) {
+                            if (l.getProducto().equals(p)) {
+                                l.cantidad = (l.getCantidad() + cantidad);
+                                esAgregado = true;
+                            }
                         }
-                    }
                     }
 
                     if (!esAgregado) {
@@ -55,21 +55,21 @@ public class Carrito {
                 }
             } else if (p instanceof ProductoPeso) {
                 for (LineaCarrito l : lineas) {
-                    if(l != null) {
+                    if (l != null) {
                         if (l.getProducto().equals(p) && ((ProductoPeso) p).pesoValido(l.getCantidad() + cantidad)) {
                             l.cantidad = (l.getCantidad() + cantidad);
                             esAgregado = true;
                         }
                     }
-                    }
+                }
 
-                    if (!esAgregado) {
-                        if (numLineas < MAX_LINEA_CARRITO && ((ProductoPeso) p).pesoValido(cantidad)) {
-                            numLineas++;
-                            lineas[numLineas - 1] = new LineaCarrito(p, cantidad);
-                            esAgregado = true;
-                        }
+                if (!esAgregado) {
+                    if (numLineas < MAX_LINEA_CARRITO && ((ProductoPeso) p).pesoValido(cantidad)) {
+                        numLineas++;
+                        lineas[numLineas - 1] = new LineaCarrito(p, cantidad);
+                        esAgregado = true;
                     }
+                }
             }
 
         }
@@ -125,4 +125,68 @@ public class Carrito {
         System.out.println("Descuento:         " + calcularDescuento());
         System.out.println("Total:             " + calcularTotal());
     }
+
+    //Estudio Recuperación autoria 1
+    public boolean vaciarProducto(String codigo) {
+        boolean seVacia = false;
+        if (codigo != null) {
+            for (int i = 0; i < numLineas && !seVacia; i++) {
+                if (lineas[i].getProducto().getCodigo().equals(codigo)) {
+                    for (int j = i; j < numLineas - 1; j++) {
+                        lineas[j] = lineas[j + 1];
+                    }
+                    lineas[numLineas - 1] = null;
+                    numLineas--;
+                    seVacia = true;
+                }
+            }
+        }
+        return seVacia;
+    }
+
+    //Estudio Recuperación autoria 2
+    public boolean contieneProducto(String codigo) {
+        boolean loContiene = false;
+        if (codigo != null && !codigo.isBlank() && !codigo.equals("")) {
+            for (int i = 0; i < numLineas && !loContiene; i++) {
+                if (lineas[i] != null) {
+                    if (lineas[i].getProducto().getCodigo().equals(codigo)) {
+                        loContiene = true;
+                    }
+                }
+            }
+        }
+        return loContiene;
+    }
+
+    //Estudio Recuperación autoria 4.1
+    public double totalProductosUnidad() {
+        double subTotalUnidad = 0;
+        if (!estaVacio()) {
+            for (int i = 0; i < numLineas; i++) {
+                if (lineas[i] != null) {
+                    if (lineas[i].getProducto() instanceof ProductoUnidad) {
+                        subTotalUnidad += lineas[i].getSubtotal();
+                    }
+                }
+            }
+        }
+        return subTotalUnidad;
+    }
+    
+    //Estudio Recuperación autoria 4.2
+    public double totalProductosPeso() {
+        double subTotalPeso = 0;
+        if (!estaVacio()) {
+            for (int i = 0; i < numLineas; i++) {
+                if (lineas[i] != null) {
+                    if (lineas[i].getProducto() instanceof ProductoPeso) {
+                        subTotalPeso += lineas[i].getSubtotal();
+                    }
+                }
+            }
+        }
+        return subTotalPeso;
+    }
+
 }
